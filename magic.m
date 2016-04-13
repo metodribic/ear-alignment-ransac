@@ -40,10 +40,10 @@ function magic()
     disp(['Number of matches: ',num2str(numMatches)]);
 
     % Get match pairs matrix
-    X1 = feature1(1:2,matches(1,:)) ; %X1(3,:) = 1 ;
-    X2 = feature2(1:2,matches(2,:)) ; %X2(3,:) = 1 ;
-    X1 = double(X1)';
-    X2 = double(X2)';
+    X1 = feature1(1:2,matches(1,:)) ; X1(3,:) = 1 ;
+    X2 = feature2(1:2,matches(2,:)) ; X2(3,:) = 1 ;
+%     X1 = double(X1)';
+%     X2 = double(X2)';
     
     % Display matched features
     figure(1);
@@ -53,9 +53,35 @@ function magic()
 % --------------------------------------------------------------------
 %                                                               RANSAC
 % --------------------------------------------------------------------
-    
+        clear H score ok ;
+        for t = 1:100
+          % estimate homograpyh
+          subset = vl_colsubset(1:numMatches, 4) ;
+          A = [] ;
+          for i = subset
+            A = cat(1, A, kron(X1(:,i)', vl_hat(X2(:,i)))) ;
+          end
+          [U,S,V] = svd(A) ;
+          H{t} = reshape(V(:,9),3,3) ;
 
-    ransacCoef = struct('minPtNum', 4,'iterNum',10,'thDist',50,'thInlrRatio', 200);
+          % score homography
+          X2_ = H{t} * X1 ;
+          du = X2_(1,:)./X2_(3,:) - X2(1,:)./X2(3,:) ;
+          dv = X2_(2,:)./X2_(3,:) - X2(2,:)./X2(3,:) ;
+          ok{t} = (du.*du + dv.*dv) < 6*6 ;
+          score(t) = sum(ok{t}) ;
+        end
+
+        [score, best] = max(score) ;
+        H = H{best} ;
+        ok = ok{best} ;
+
+
+%     coef.minPtNum = 4;
+%     coef.iterNum = 30;
+%     coef.thDist = 4;
+%     coef.thInlrRatio = .1;
+%     [H corrPtIdx] = ransac1(X1,X2,coef,@solveHomo,@calcDist);
 
     % Exclude the outliers, and compute the transformation matrix.
     [tform,inlierPtsOriginal,inlierPtsDistorted, status] = ...
@@ -79,5 +105,16 @@ function magic()
     end
     
     
+end
+
+function d = calcDist(H,pts1,pts2)
+%	Project PTS1 to PTS3 using H, then calcultate the distances between
+%	PTS2 and PTS3
+
+n = size(pts1,2);
+pts3 = H*[pts1;ones(1,n)];
+pts3 = pts3(1:2,:)./repmat(pts3(3,:),2,1);
+d = sum((pts2-pts3).^2,1);
+
 end
 
