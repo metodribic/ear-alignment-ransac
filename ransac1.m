@@ -14,6 +14,7 @@ function [f inlierIdx] = ransac1( x,y,ransacCoef,funcFindF,funcDist )
 %	FUNCFINDF is a func handle, f1 = funcFindF(x1,y1)
 %	x1 is M*n1 and y1 is N*n1, n1 >= ransacCoef.minPtNum
 %	f1 can be of any type.
+
 %	FUNCDIST is a func handle, d = funcDist(f,x1,y1)
 %	It uses f returned by FUNCFINDF, and return the distance
 %	between f and the points, d is 1*n1.

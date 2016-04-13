@@ -1,60 +1,67 @@
 function magic()
 
+% --------------------------------------------------------------------
+%                                       INPUT + HISTOGRAM NORMALZATION
+% --------------------------------------------------------------------
     % input images
     original  = rgb2gray(imread('1/02.png'));
     distorted = rgb2gray(imread('1/06.png'));
     
-    
     original  = rgb2gray(imread('2/09.png'));
     distorted = rgb2gray(imread('2/10.png'));
-
+ 
 %     original  = rgb2gray(imread('3/03.png'));
 %     distorted = rgb2gray(imread('3/10.png'));
 
+    original = histeq(original);
+    distorted = histeq(distorted);
+
+% --------------------------------------------------------------------
+%                                                                 SIFT
+% --------------------------------------------------------------------
+
+    
     % show original and distorted picture
     figure(1);
     subplot(2, 3, 1); imshow(uint8(original));  title('Original image');
     figure(1);
     subplot(2, 3, 2); imshow(uint8(distorted)); title('Distorted image'); 
     
+
+    % Extract features and descriptors
+    [feature1,descriptor1] = vl_sift(single(original), 'PeakThresh', 0, 'edgethresh', 100);
+    [feature2,descriptor2] = vl_sift(single(distorted), 'PeakThresh', 0, 'edgethresh', 100);
     
-    % Xing Di SIFT - http://www.mathworks.com/matlabcentral/fileexchange/50319-sift-feature-extreaction
-    [x_org, y_org] = SIFT_feature(original, 0.0095);
-    [x_dist, y_dist] = SIFT_feature(distorted, 0.0095);
-    ptsOriginal = [x_org; y_org]';
-    ptsDistorted = [x_dist; y_dist]';
+    % Matches the two sets of SIFT descriptors descriptor1 and descriptor2.
+    [matches, scores] = vl_ubcmatch(descriptor1,descriptor2); 
     
-    [featuresOriginal,validPtsOriginal]   = extractFeatures(original, ptsOriginal, 'Method','Block');
-    [featuresDistorted,validPtsDistorted] = extractFeatures(distorted,ptsDistorted, 'Method','Block');
-%     disp('SIFT size:');
-%     disp(size(featuresOriginal));
-%     disp(size(featuresDistorted));
+    % Number of matches
+    numMatches = size(matches,2);
+    disp(['Number of matches: ',num2str(numMatches)]);
+
+    % Get match pairs matrix
+    X1 = feature1(1:2,matches(1,:)) ; %X1(3,:) = 1 ;
+    X2 = feature2(1:2,matches(2,:)) ; %X2(3,:) = 1 ;
+    X1 = double(X1)';
+    X2 = double(X2)';
+    
+    % Display matched features
+    figure(1);
+    subplot(2, 3, 3); showMatchedFeatures(original,distorted,X1,X2);
+    title('Matched SIFT points,including outliers');
+
+% --------------------------------------------------------------------
+%                                                               RANSAC
+% --------------------------------------------------------------------
     
 
-    
-    % MATLAB SURF
-%     ptsOriginal  = detectSURFFeatures(original,  'MetricThreshold', 0);
-%     ptsDistorted = detectSURFFeatures(distorted, 'MetricThreshold', 0);
-%     [featuresOriginal,validPtsOriginal]   = extractFeatures(original, ptsOriginal, 'Method','Block');
-%     [featuresDistorted,validPtsDistorted] = extractFeatures(distorted,ptsDistorted, 'Method','Block');
-%     disp('SURF size:');
-%     disp(size(featuresOriginal));
-%     disp(size(featuresDistorted));
+    ransacCoef = struct('minPtNum', 4,'iterNum',10,'thDist',50,'thInlrRatio', 200);
 
- 
-     % match features
-    index_pairs = matchFeatures(featuresOriginal,featuresDistorted, 'MatchThreshold', 90, 'Unique', true, 'Metric', 'SAD', 'MaxRatio', 1);
-    matchedPtsOriginal  = validPtsOriginal(index_pairs(:,1),:);
-    matchedPtsDistorted = validPtsDistorted(index_pairs(:,2),:);
-
-     figure(1);
-     subplot(2, 3, 3); showMatchedFeatures(original,distorted,matchedPtsOriginal,matchedPtsDistorted);
-     title('Matched SURF points,including outliers');
-
-    
     % Exclude the outliers, and compute the transformation matrix.
-    [tform,inlierPtsDistorted,inlierPtsOriginal, status] = estimateGeometricTransform(matchedPtsDistorted,matchedPtsOriginal,'projective', 'Confidence', 99);
+    [tform,inlierPtsOriginal,inlierPtsDistorted, status] = ...
+        estimateGeometricTransform(X1,X2,'Projective', 'Confidence', 99);
     
+    % Status must be 0 to complete transformation
     if status == 0
         figure(1);
         subplot(2, 3, 4); showMatchedFeatures(original,distorted,inlierPtsOriginal,inlierPtsDistorted);
