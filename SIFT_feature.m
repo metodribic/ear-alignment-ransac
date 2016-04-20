@@ -20,9 +20,9 @@ function [rx, ry] =  SIFT_feature(image, input_threshold)
     img=im2double(img);
     origin=img;
     % img=medfilt2(img);
-    toc
+
     %% Scale-Space Extrema Detection
-    tic
+
     % original sigma and the number of actave can be modified. the larger
     % sigma0, the more quickly-smooth images
     sigma0=sqrt(2);
@@ -69,10 +69,9 @@ function [rx, ry] =  SIFT_feature(image, input_threshold)
         temp_img=temp_img(1:2:end,1:2:end);
         temp_img=padarray(temp_img,[1,1],'both','replicate');
     end
-    toc
     %% Keypoint Localistaion
     % search each pixel in the DoG map to find the extreme point
-    tic
+
     interval=level-1;
     number=0;
     for i=2:octave+1
@@ -108,7 +107,7 @@ function [rx, ry] =  SIFT_feature(image, input_threshold)
     end
     idx= extrema==0;
     extrema(idx)=[];
-    toc
+
     [m,n]=size(img);
     x=floor((extrema(3:4:end)-1)./(n./(2.^(extrema(1:4:end)-2))))+1;
     y=mod((extrema(3:4:end)-1),m./(2.^(extrema(1:4:end)-2)))+1;
@@ -123,7 +122,7 @@ function [rx, ry] =  SIFT_feature(image, input_threshold)
     %eliminate the point with low contrast or poorly localised on an edge
     % x:|,y:-- x is for vertial and y is for horizontal
     % value comes from the paper.
-    tic
+
     threshold=input_threshold;
     r=10;
     extr_volume=length(extrema)/4;
