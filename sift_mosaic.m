@@ -11,8 +11,8 @@ function mosaic = sift_mosaic(im1, im2)
 % AUTORIGHTS
 
 if nargin == 0
-  im1 = imread('2/09.png') ;
-  im2 = imread('2/10.png') ;
+  im1 = imread('databases/awe/028/10.png') ;
+  im2 = imread('databases/awe/028/03.png') ;
 end
 
 % make single
@@ -29,10 +29,10 @@ im2g = histeq(im2g);
 %                                                         SIFT matches
 % --------------------------------------------------------------------
 
-[f1,d1] = vl_sift(im1g, 'PeakThresh', 0, 'edgethresh', 1000);
-[f2,d2] = vl_sift(im2g, 'PeakThresh', 0, 'edgethresh', 1000);
+[f1,d1] = vl_sift(im1g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200);
+[f2,d2] = vl_sift(im2g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200);
 
-[matches, scores] = vl_ubcmatch(d1,d2) ;
+[matches, scores] = vl_ubcmatch(d1,d2, 1.2) ;
 
 numMatches = size(matches,2) ;
 

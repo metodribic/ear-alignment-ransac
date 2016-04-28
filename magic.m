@@ -4,14 +4,9 @@ function magic()
 %                                       INPUT + HISTOGRAM NORMALZATION
 % --------------------------------------------------------------------
     % input images
-    original  = rgb2gray(imread('1/02.png'));
-    distorted = rgb2gray(imread('1/06.png'));
-    
-    original  = rgb2gray(imread('2/09.png'));
-    distorted = rgb2gray(imread('2/10.png'));
- 
-%     original  = rgb2gray(imread('3/03.png'));
-%     distorted = rgb2gray(imread('3/10.png'));
+    original  = rgb2gray(imread('databases/awe/028/10.png'));
+    distorted = rgb2gray(imread('databases/awe/028/03.png'));
+
 
     original = histeq(original);
     distorted = histeq(distorted);
