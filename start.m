@@ -1,5 +1,6 @@
 function start()
-    for i=1:100
+    tic
+    for i=6:100
         path = 'databases/awe/';
         prefix = '';
         
@@ -39,4 +40,5 @@ function start()
             
         end
     end
+    toc
 end

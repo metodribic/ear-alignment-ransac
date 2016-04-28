@@ -1,15 +1,14 @@
 function magic(input_original, input_distorted)
+%function magic()
 
-    %[db, a] = awetcore_database_load();
     % input images
      original  = rgb2gray(imread(input_original));
      distorted = rgb2gray(imread(input_distorted));
-%          
-%     original  = rgb2gray(imread('2/09.png'));
-%     distorted = rgb2gray(imread('2/10.png'));
-% 
-%     original  = rgb2gray(imread('3/03.png'));
-%     distorted = rgb2gray(imread('3/10.png'));
+     disp([input_original, ' > ', input_distorted]);
+         
+%     original  = rgb2gray(imread('databases/awe/028/10.png'));
+%     distorted = rgb2gray(imread('databases/awe/028/03.png'));
+
 
 %     original = histeq(original);
 %     distorted = histeq(distorted);
@@ -20,19 +19,19 @@ function magic(input_original, input_distorted)
     figure(1);
     subplot(2, 3, 2); imshow(uint8(distorted)); title('Distorted image'); 
     
-    fails = true;
     
+    
+    % Xing Di SIFT - http://www.mathworks.com/matlabcentral/fileexchange/50319-sift-feature-extreaction
+    [x_org, y_org] = SIFT_feature(original, 0.0095);
+    [x_dist, y_dist] = SIFT_feature(distorted, 0.0095);
+    ptsOriginal = [x_org; y_org]';
+    ptsDistorted = [x_dist; y_dist]';
 
-
-        % Xing Di SIFT - http://www.mathworks.com/matlabcentral/fileexchange/50319-sift-feature-extreaction
-        [x_org, y_org] = SIFT_feature(original, 0.0095);
-        [x_dist, y_dist] = SIFT_feature(distorted, 0.0095);
-        ptsOriginal = [x_org; y_org]';
-        ptsDistorted = [x_dist; y_dist]';
-
-        [featuresOriginal,validPtsOriginal]   = extractFeatures(original, ptsOriginal, 'Method','Block');
-        [featuresDistorted,validPtsDistorted] = extractFeatures(distorted,ptsDistorted, 'Method','Block');
+    [featuresOriginal,validPtsOriginal]   = extractFeatures(original, ptsOriginal, 'Method','Block');
+    [featuresDistorted,validPtsDistorted] = extractFeatures(distorted,ptsDistorted, 'Method','Block');
+    
     try_index = 0;
+    fails = true;
     while fails==true &&  try_index < 10
 
          % match features
@@ -40,24 +39,25 @@ function magic(input_original, input_distorted)
         matchedPtsOriginal  = validPtsOriginal(index_pairs(:,1),:);
         matchedPtsDistorted = validPtsDistorted(index_pairs(:,2),:);
 
-         figure(1);
-         subplot(2, 3, 3); showMatchedFeatures(original,distorted,matchedPtsOriginal,matchedPtsDistorted);
-         title('Matched SURF points,including outliers');
+        figure(1);
+        subplot(2, 3, 3); showMatchedFeatures(original,distorted,matchedPtsOriginal,matchedPtsDistorted);
+        title('Matched SURF points,including outliers');
 
 
         % Exclude the outliers, and compute the transformation matrix.
         [tform,inlierPtsDistorted,inlierPtsOriginal, status] = estimateGeometricTransform(matchedPtsOriginal, matchedPtsDistorted,'projective', 'Confidence', 99);
 
         if status == 0
-
             % check if esimated homography fails
-            %tform.T
+            % check last row first two numbers - if they are larger than 5
+            % than hoomography fails
             if tform.T(end, 1) < 5 && tform.T(end, 1) > -5
                 if tform.T(end, 2) < 5 && tform.T(end, 2) > -5
                     fails = false;
                 end
             end
-
+            
+            % if it does not fail - transform distorted image
             if fails == false
                 figure(1);
                 subplot(2, 3, 4); showMatchedFeatures(original,distorted,inlierPtsOriginal,inlierPtsDistorted);
@@ -68,10 +68,9 @@ function magic(input_original, input_distorted)
                 Ir = imwarp(distorted,tform);
                 figure(1);
                 subplot(2, 3, 5); imshow(Ir); title('Recovered image'); axis on;
-                result_path = strcat('results/',distorted(15:1:end));
-                imwrite(Ir, result_path)
+                result_path = strcat(input_distorted(15:1:17),'_',input_distorted(19:1:end));
+                imwrite(Ir, result_path, 'png');
                 break
-                %figure(2); imshow(Ir);
             else
                 disp('Esitmated homograpy fails!');
             end
