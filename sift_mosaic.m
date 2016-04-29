@@ -63,7 +63,7 @@ for t = 1:100
 end
 
 [score, best] = max(score) ;
-H = H{best} ;
+H = H{best}
 ok = ok{best} ;
 
 % --------------------------------------------------------------------
@@ -143,6 +143,11 @@ im2_(isnan(im2_)) = 0 ;
 mosaic = (im1_ + im2_) ./ mass ;
 
 figure(2) ; clf ;
+subplot(1,3,1);
+imagesc(im1_) ; axis image off ;
+subplot(1,3,2);
+imagesc(im2_) ; axis image off ;
+subplot(1,3,3);
 imagesc(mosaic) ; axis image off ;
 title('Mosaic') ;
 
