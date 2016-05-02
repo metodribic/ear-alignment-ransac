@@ -10,10 +10,14 @@ function mosaic = sift_mosaic(im1, im2)
 
 % AUTORIGHTS
 
+
 if nargin == 0
   im1 = imread('databases/awe/028/10.png') ;
-  im2 = imread('databases/awe/028/03.png') ;
+  im2 = imread('databases/awe/028/05.png') ;
 end
+
+[width_im2, height_im2, ~] = size(im2);
+[width_im1, height_im1, ~] = size(im1);
 
 % make single
 im1 = im2single(im1) ;
@@ -63,7 +67,7 @@ for t = 1:100
 end
 
 [score, best] = max(score) ;
-H = H{best}
+H = H{best} ;
 ok = ok{best} ;
 
 % --------------------------------------------------------------------
@@ -79,14 +83,14 @@ function err = residual(H)
  err = sum(du.*du + dv.*dv) ;
 end
 
-if exist('fminsearch') == 2
+if exist('fminsearch') == 6
   H = H / H(3,3) ;
   opts = optimset('Display', 'none', 'TolFun', 1e-8, 'TolX', 1e-8) ;
   H(1:8) = fminsearch(@residual, H(1:8)', opts) ;
 else
   warning('Refinement disabled as fminsearch was not found.') ;
 end
-
+H
 % --------------------------------------------------------------------
 %                                                         Show matches
 % --------------------------------------------------------------------
@@ -146,10 +150,24 @@ figure(2) ; clf ;
 subplot(1,3,1);
 imagesc(im1_) ; axis image off ;
 subplot(1,3,2);
-imagesc(im2_) ; axis image off ;
+imagesc(im2_) ; axis image off 
 subplot(1,3,3);
 imagesc(mosaic) ; axis image off ;
 title('Mosaic') ;
+
+% check distorted image size and compre it to the original image
+[width_im2_, height_im2_, ~] = size(im2_);
+if width_im1*1.1 < width_im2_
+    disp('Transformation fails! (width)');
+    disp([height_im1, height_im2_]);
+elseif height_im1*1.1 < height_im2_
+    disp('Transformation fails! (height)');
+    disp([width_im1, width_im2_]);
+end
+% disp([width_im2, width_im2_]);
+% disp([height_im2, height_im2_]);
+
+
 
 if nargout == 0, clear mosaic ; end
 
