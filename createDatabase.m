@@ -6,10 +6,7 @@ function createDatabase()
     % iterate over all directories
     for i=1:100
         
-% --------------------------------------------------------------------
-%                                          create path for reading dir
-% --------------------------------------------------------------------
-        
+        % create path for reading dir        
         path = 'databases/awe/';
         prefix = '';
         
@@ -26,10 +23,8 @@ function createDatabase()
         prefix = strcat(prefix, '/');
         path = strcat(path, prefix);
         
-% --------------------------------------------------------------------
-%                                                         get dir data
-% --------------------------------------------------------------------
-        
+
+        % get dir data
         fname = strcat(path, 'annotations.json');
         fid = fopen(fname);
         raw = fread(fid,inf);
@@ -37,17 +32,11 @@ function createDatabase()
         fclose(fid);
         dir_data = JSON.parse(str);
         
-% --------------------------------------------------------------------
-%                               get best_ear and its coresponding data
-% --------------------------------------------------------------------
-
+        % get best_ear and its coresponding data
         best_ear_data = get_best_ear(path, side);
         best_ear = imread(strcat(path,best_ear_data.file));
         
-% --------------------------------------------------------------------
-%                                       iterate over all images in dir
-% --------------------------------------------------------------------
-
+        % iterate over all images in dir
         for j = 1:10
             
             %check the side
@@ -82,6 +71,7 @@ function createDatabase()
             image = imread(image_path);
             alligned_image = ear_alignment(best_ear, image);
             % TODO: Save image
+            
             figure(1); imshow(alligned_image);
         end
     end
