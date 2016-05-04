@@ -16,11 +16,11 @@ function mosaic = sift_mosaic(im1, im2)
 % --------------------------------------------------------------------
 %                                                            Prepocess
 % --------------------------------------------------------------------
-
+disp('Magic is happening ...');
 % if number of input aruguments are 0, load pictures here
 if nargin == 0
   im1 = imread('databases/awe/028/10.png') ;
-  im2 = imread('databases/awe/028/03.png') ;
+  im2 = imread('databases/awe/028/05.png') ;
   
   im1 = imresize(im1, [100 100]);
   im2 = imresize(im2, [100 100]);
@@ -44,10 +44,10 @@ im2g = histeq(im2g);
 %                                                         SIFT matches
 % --------------------------------------------------------------------
 
-[f1,d1] = vl_sift(im1g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200);
-[f2,d2] = vl_sift(im2g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200);
+[f1,d1] = vl_sift(im1g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
+[f2,d2] = vl_sift(im2g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
 
-[matches, scores] = vl_ubcmatch(d1,d2, 1.2) ;
+[matches, scores] = vl_ubcmatch(d1,d2, 1) ;
 
 numMatches = size(matches,2) ;
 
@@ -182,5 +182,5 @@ title('Mosaic') ;
 
 
 if nargout == 0, clear mosaic ; end
-
+disp('Magic happend!');
 end
