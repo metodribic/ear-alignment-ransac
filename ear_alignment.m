@@ -1,4 +1,4 @@
-function mosaic = sift_mosaic(im1, im2)
+function im2_ = ear_alignment(im1, im2)
 % SIFT_MOSAIC Demonstrates matching two images using SIFT and RANSAC
 %
 %   SIFT_MOSAIC demonstrates matching two images based on SIFT
@@ -28,7 +28,7 @@ tic
 % if number of input aruguments are 0, load pictures here
 if nargin == 0
     original_im1 = imread('databases/awe/028/10.png') ;
-    original_im2 = imread('databases/awe/028/03.png') ;
+    original_im2 = imread('databases/awe/028/10.png') ;
 else
     original_im1 = im1;
     original_im2 = im2;
@@ -124,30 +124,30 @@ end
 %                                                         Show matches
 % --------------------------------------------------------------------
 
-dh1 = max(size(im2,1)-size(im1,1),0) ;
-dh2 = max(size(im1,1)-size(im2,1),0) ;
-
-figure(1) ; clf ;
-subplot(2,1,1) ;
-imagesc([padarray(im1,dh1,'post') padarray(im2,dh2,'post')]) ;
-o = size(im1,2) ;
-line([f1(1,matches(1,:));f2(1,matches(2,:))+o], ...
-     [f1(2,matches(1,:));f2(2,matches(2,:))]) ;
-title(sprintf('%d tentative matches', numMatches)) ;
-axis image off ;
-
-subplot(2,1,2) ;
-imagesc([padarray(im1,dh1,'post') padarray(im2,dh2,'post')]) ;
-o = size(im1,2) ;
-line([f1(1,matches(1,ok));f2(1,matches(2,ok))+o], ...
-     [f1(2,matches(1,ok));f2(2,matches(2,ok))]) ;
-title(sprintf('%d (%.2f%%) inliner matches out of %d', ...
-              sum(ok), ...
-              100*sum(ok)/numMatches, ...
-              numMatches)) ;
-axis image off ;
-
-drawnow ;
+% dh1 = max(size(im2,1)-size(im1,1),0) ;
+% dh2 = max(size(im1,1)-size(im2,1),0) ;
+% 
+% figure(1) ; clf ;
+% subplot(2,1,1) ;
+% imagesc([padarray(im1,dh1,'post') padarray(im2,dh2,'post')]) ;
+% o = size(im1,2) ;
+% line([f1(1,matches(1,:));f2(1,matches(2,:))+o], ...
+%      [f1(2,matches(1,:));f2(2,matches(2,:))]) ;
+% title(sprintf('%d tentative matches', numMatches)) ;
+% axis image off ;
+% 
+% subplot(2,1,2) ;
+% imagesc([padarray(im1,dh1,'post') padarray(im2,dh2,'post')]) ;
+% o = size(im1,2) ;
+% line([f1(1,matches(1,ok));f2(1,matches(2,ok))+o], ...
+%      [f1(2,matches(1,ok));f2(2,matches(2,ok))]) ;
+% title(sprintf('%d (%.2f%%) inliner matches out of %d', ...
+%               sum(ok), ...
+%               100*sum(ok)/numMatches, ...
+%               numMatches)) ;
+% axis image off ;
+% 
+% drawnow ;
 
 % --------------------------------------------------------------------
 %                                                               Mosaic
@@ -179,29 +179,30 @@ mosaic = (im1_ + im2_) ./ mass ;
 %                                        Plot start images and results
 % --------------------------------------------------------------------
 
-figure(2) ; clf ;
-subplot(2,3,1);
-imagesc(im1_) ; axis image off ; 
-title(['Original image (resized to 100x100 from ', num2str(width_im1), 'x', num2str(height_im1), ')']);
-
-subplot(2,3,2);
-imagesc(original_im2) ; axis image off ; 
-title('Distoreted image');
-
-subplot(2,3,3);
-imagesc(im2) ; axis image off ; 
-title(['Distoreted image (resized to ',num2str(height_im2),'x',num2str(width_im2), ' from ', num2str(height_original_im2), 'x', num2str(width_original_im2), ')']);
-
-subplot(2,3,4);
-imagesc(im2_) ; axis image off; 
-title('Aligned image');
-
-subplot(2,3,5);
-imagesc(mosaic) ; axis image off ;
-title('Mosaic') ;
-
-time = toc;
-disp(['Magic happend in ', num2str(time), ' seconds!']);
+% figure(2) ; clf ;
+% subplot(2,3,1);
+% imagesc(im1_) ; axis image off ; 
+% title(['Original image (resized to 100x100 from ', num2str(width_im1), 'x', num2str(height_im1), ')']);
+% 
+% subplot(2,3,2);
+% imagesc(original_im2) ; axis image off ; 
+% title('Distoreted image');
+% 
+% subplot(2,3,3);
+% imagesc(im2) ; axis image off ; 
+% title(['Distoreted image (resized to ',num2str(height_im2),'x',num2str(width_im2), ...
+%        ' from ', num2str(height_original_im2), 'x', num2str(width_original_im2), ')']);
+% 
+% subplot(2,3,4);
+% imagesc(im2_) ; axis image off; 
+% title('Aligned image');
+% 
+% subplot(2,3,5);
+% imagesc(mosaic) ; axis image off ;
+% title('Mosaic') ;
+% 
+% time = toc;
+% disp(['Magic happend in ', num2str(time), ' seconds!']);
 
 if nargout == 0, clear mosaic ; end
 end

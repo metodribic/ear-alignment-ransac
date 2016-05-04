@@ -1,4 +1,4 @@
-function img = get_best_ear(path)
+function best_fit = get_best_ear(path, side)
 
 % if nargin == 0
 %     path = 'databases/awe/030/';
@@ -28,21 +28,22 @@ function img = get_best_ear(path)
         end
         current_data = eval(command);
         
-        %check all parameters accessories, overlap, hPitch, hYaw, hRol, 
-        if best_fit.accessories >= current_data.accessories
-            if best_fit.overlap >= current_data.overlap
-                if best_fit.hYaw >= current_data.hYaw
-                    % check the resolution of picture
-                    if best_fit.h < current_data.h && best_fit.w < current_data.w
-                        best_fit = current_data;
+        if strcmp(current_data.d, side) == 1
+            %check all parameters accessories, overlap, hPitch, hYaw, hRol, 
+            if best_fit.accessories >= current_data.accessories
+                if best_fit.overlap >= current_data.overlap
+                    if best_fit.hYaw == current_data.hYaw
+                        % check the resolution of picture
+                        if best_fit.h < current_data.h && best_fit.w < current_data.w
+                            best_fit = current_data;
+                        end
+                    else
+                        if best_fit.hYaw > current_data.hYaw
+                            best_fit = current_data;
+                        end
                     end
                 end
             end
         end
     end
-% --------------------------------------------------------------------
-%                                                         return image
-% --------------------------------------------------------------------
-    file_name = strcat(path, best_fit.file);
-    img = imread(file_name);
 end
