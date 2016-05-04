@@ -10,12 +10,23 @@ function mosaic = sift_mosaic(im1, im2)
 
 % AUTORIGHTS
 
+% start vlFeat library
+%run('../vlfeat-0.9.20/toolbox/vl_setup');
 
+% --------------------------------------------------------------------
+%                                                            Prepocess
+% --------------------------------------------------------------------
+
+% if number of input aruguments are 0, load pictures here
 if nargin == 0
   im1 = imread('databases/awe/028/10.png') ;
-  im2 = imread('databases/awe/028/05.png') ;
+  im2 = imread('databases/awe/028/03.png') ;
+  
+  im1 = imresize(im1, [100 100]);
+  im2 = imresize(im2, [100 100]);
 end
 
+% get sizes of pictures
 [width_im2, height_im2, ~] = size(im2);
 [width_im1, height_im1, ~] = size(im1);
 
@@ -71,7 +82,7 @@ H = H{best} ;
 ok = ok{best} ;
 
 % --------------------------------------------------------------------
-%                                                  Optional refinement
+%                                                  Optional refinement 
 % --------------------------------------------------------------------
 
 function err = residual(H)
@@ -83,6 +94,7 @@ function err = residual(H)
  err = sum(du.*du + dv.*dv) ;
 end
 
+% TODO: Check the exist return value, default was 2!
 if exist('fminsearch') == 6
   H = H / H(3,3) ;
   opts = optimset('Display', 'none', 'TolFun', 1e-8, 'TolX', 1e-8) ;
@@ -90,7 +102,7 @@ if exist('fminsearch') == 6
 else
   warning('Refinement disabled as fminsearch was not found.') ;
 end
-H
+
 % --------------------------------------------------------------------
 %                                                         Show matches
 % --------------------------------------------------------------------
@@ -157,13 +169,13 @@ title('Mosaic') ;
 
 % check distorted image size and compre it to the original image
 [width_im2_, height_im2_, ~] = size(im2_);
-if width_im1*1.1 < width_im2_
-    disp('Transformation fails! (width)');
-    disp([height_im1, height_im2_]);
-elseif height_im1*1.1 < height_im2_
-    disp('Transformation fails! (height)');
-    disp([width_im1, width_im2_]);
-end
+% if width_im1*1.1 < width_im2_
+%     disp('Transformation fails! (width)');
+%     disp([height_im1, height_im2_]);
+% elseif height_im1*1.1 < height_im2_
+%     disp('Transformation fails! (height)');
+%     disp([width_im1, width_im2_]);
+% end
 % disp([width_im2, width_im2_]);
 % disp([height_im2, height_im2_]);
 
