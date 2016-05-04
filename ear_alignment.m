@@ -16,7 +16,7 @@ function im2_ = ear_alignment(im1, im2)
 
 % start vlFeat library if it is not already installed
 if ~exist('vl_version', 'file')
-    run('../vlfeat-0.9.20/toolbox/vl_setup');
+    run('vlfeat-0.9.20/toolbox/vl_setup');
 end
 
 % --------------------------------------------------------------------

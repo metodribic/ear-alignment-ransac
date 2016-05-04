@@ -5,7 +5,6 @@ function createDatabase(side)
     
     if ~exist('results', 'dir')
         mkdir('results');
-%         cd results;
     end
     
     % iterate over all directories
@@ -25,7 +24,9 @@ function createDatabase(side)
         end
         
         % create dir for this person
-        mkdir('results', prefix);
+        if ~exist(strcat('results',prefix), 'dir')
+            mkdir('results', prefix);
+        end
         
         % get full path of direcotry
         prefix = strcat(prefix, '/');
