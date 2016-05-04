@@ -22,17 +22,13 @@ end
 % --------------------------------------------------------------------
 %                                                            Prepocess
 % --------------------------------------------------------------------
-disp('Magic is happening ...');
-tic
+% disp('Magic is happening ...');
+% tic
 
 % if number of input aruguments are 0, load pictures here
-if nargin == 0
-    original_im1 = imread('databases/awe/028/10.png') ;
-    original_im2 = imread('databases/awe/028/10.png') ;
-else
-    original_im1 = im1;
-    original_im2 = im2;
-end
+original_im1 = im1;
+original_im2 = im2;
+
 
 % get sizes of pictures
 [height_im1, width_im1, ~] = size(original_im1);

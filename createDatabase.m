@@ -1,7 +1,12 @@
-function createDatabase()
+function createDatabase(side)
 
     % which side you are aligning (left or right)
-    side = 'l';
+%     side = 'l';
+    
+    if ~exist('results', 'dir')
+        mkdir('results');
+%         cd results;
+    end
     
     % iterate over all directories
     for i=1:100
@@ -19,6 +24,9 @@ function createDatabase()
             prefix = int2str(i);
         end
         
+        % create dir for this person
+        mkdir('results', prefix);
+        
         % get full path of direcotry
         prefix = strcat(prefix, '/');
         path = strcat(path, prefix);
@@ -35,6 +43,7 @@ function createDatabase()
         % get best_ear and its coresponding data
         best_ear_data = get_best_ear(path, side);
         best_ear = imread(strcat(path,best_ear_data.file));
+        
         
         % iterate over all images in dir
         for j = 1:10
@@ -69,10 +78,12 @@ function createDatabase()
             
             % read image
             image = imread(image_path);
+             disp(['Aligning ear ', prefix, name]);
             alligned_image = ear_alignment(best_ear, image);
             % TODO: Save image
+            save_path = strcat('results/', prefix);
+            imwrite(alligned_image, fullfile(save_path, name))
             
-            figure(1); imshow(alligned_image);
         end
     end
 end
