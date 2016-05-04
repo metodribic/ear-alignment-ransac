@@ -18,22 +18,23 @@ function mosaic = sift_mosaic(im1, im2)
 % --------------------------------------------------------------------
 disp('Magic is happening ...');
 tic
+
 % if number of input aruguments are 0, load pictures here
 if nargin == 0
-    original_im1 = imread('databases/awe/028/02.png') ;
-    original_im2 = imread('databases/awe/028/09.png') ;
-  
-    % get sizes of pictures
-    [width_im1, height_im1, ~] = size(original_im1);
-    [width_im2, height_im2, ~] = size(original_im2);
-  
-    im1 = imresize(original_im1, [100 100]);
-    im2 = imresize(original_im2, [100 100]);
-    
+    original_im1 = imread('databases/awe/028/10.png') ;
+    original_im2 = imread('databases/awe/028/03.png') ;
+else
+    original_im1 = im1;
+    original_im2 = im2;
 end
 
+% get sizes of pictures
+[width_im1, height_im1, ~] = size(original_im1);
+[width_im2, height_im2, ~] = size(original_im2);
 
-
+% resize on 100x100
+im1 = imresize(original_im1, [100 100]);
+im2 = imresize(original_im2, [100 100]);
 
 % make single
 im1 = im2single(im1) ;
@@ -42,6 +43,8 @@ im2 = im2single(im2) ;
 % make grayscale
 im1g = rgb2gray(im1);
 im2g = rgb2gray(im2);
+
+% normalize histograms
 im1g = histeq(im1g);
 im2g = histeq(im2g);
 
