@@ -17,18 +17,23 @@ function mosaic = sift_mosaic(im1, im2)
 %                                                            Prepocess
 % --------------------------------------------------------------------
 disp('Magic is happening ...');
+tic
 % if number of input aruguments are 0, load pictures here
 if nargin == 0
-  im1 = imread('databases/awe/028/10.png') ;
-  im2 = imread('databases/awe/028/05.png') ;
+    original_im1 = imread('databases/awe/028/10.png') ;
+    original_im2 = imread('databases/awe/028/08.png') ;
   
-  im1 = imresize(im1, [100 100]);
-  im2 = imresize(im2, [100 100]);
+    % get sizes of pictures
+    [width_im1, height_im1, ~] = size(original_im1);
+    [width_im2, height_im2, ~] = size(original_im2);
+  
+    im1 = imresize(original_im1, [100 100]);
+    im2 = imresize(original_im2, [100 100]);
+    
 end
 
-% get sizes of pictures
-[width_im2, height_im2, ~] = size(im2);
-[width_im1, height_im1, ~] = size(im1);
+
+
 
 % make single
 im1 = im2single(im1) ;
@@ -47,7 +52,7 @@ im2g = histeq(im2g);
 [f1,d1] = vl_sift(im1g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
 [f2,d2] = vl_sift(im2g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
 
-[matches, scores] = vl_ubcmatch(d1,d2, 1) ;
+[matches, scores] = vl_ubcmatch(d1,d2, 0.9) ;
 
 numMatches = size(matches,2) ;
 
@@ -158,17 +163,30 @@ im1_(isnan(im1_)) = 0 ;
 im2_(isnan(im2_)) = 0 ;
 mosaic = (im1_ + im2_) ./ mass ;
 
+% plot start images and results
 figure(2) ; clf ;
-subplot(1,3,1);
-imagesc(im1_) ; axis image off ;
-subplot(1,3,2);
-imagesc(im2_) ; axis image off 
-subplot(1,3,3);
+subplot(2,3,1);
+imagesc(im1_) ; axis image off ; 
+title(['Original image (resized to 100x100 from ', num2str(width_im1), 'x', num2str(height_im1), ')']);
+
+subplot(2,3,2);
+imagesc(original_im2) ; axis image off ; 
+title('Distoreted image');
+
+subplot(2,3,3);
+imagesc(im2) ; axis image off ; 
+title(['Distoreted image (resized to 100x100 from ', num2str(width_im2), 'x', num2str(height_im2), ')']);
+
+subplot(2,3,4);
+imagesc(im2_) ; axis image off; 
+title('Aligned image');
+
+subplot(2,3,5);
 imagesc(mosaic) ; axis image off ;
 title('Mosaic') ;
 
 % check distorted image size and compre it to the original image
-[width_im2_, height_im2_, ~] = size(im2_);
+% [width_im2_, height_im2_, ~] = size(im2_);
 % if width_im1*1.1 < width_im2_
 %     disp('Transformation fails! (width)');
 %     disp([height_im1, height_im2_]);
@@ -179,8 +197,8 @@ title('Mosaic') ;
 % disp([width_im2, width_im2_]);
 % disp([height_im2, height_im2_]);
 
-
+time = toc;
+disp(['Magic happend in ', num2str(time), ' seconds!']);
 
 if nargout == 0, clear mosaic ; end
-disp('Magic happend!');
 end
