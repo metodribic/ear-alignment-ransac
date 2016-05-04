@@ -10,8 +10,14 @@ function mosaic = sift_mosaic(im1, im2)
 
 % AUTORIGHTS
 
-% start vlFeat library
-%run('../vlfeat-0.9.20/toolbox/vl_setup');
+% --------------------------------------------------------------------
+%                                                vlFeat initialization
+% --------------------------------------------------------------------
+
+% start vlFeat library if it is not already installed
+if ~exist('vl_version', 'file')
+    run('../vlfeat-0.9.20/toolbox/vl_setup');
+end
 
 % --------------------------------------------------------------------
 %                                                            Prepocess
@@ -29,12 +35,15 @@ else
 end
 
 % get sizes of pictures
-[width_im1, height_im1, ~] = size(original_im1);
-[width_im2, height_im2, ~] = size(original_im2);
+[height_im1, width_im1, ~] = size(original_im1);
+[height_original_im2, width_original_im2, ~] = size(original_im2);
 
-% resize on 100x100
+% resize
 im1 = imresize(original_im1, [100 100]);
 im2 = imresize(original_im2, [100 100]);
+%im2 = imresize(original_im2, [100 NaN]);
+
+[height_im2, width_im2, ~] = size(im2);
 
 % make single
 im1 = im2single(im1) ;
@@ -181,7 +190,7 @@ title('Distoreted image');
 
 subplot(2,3,3);
 imagesc(im2) ; axis image off ; 
-title(['Distoreted image (resized to 100x100 from ', num2str(width_im2), 'x', num2str(height_im2), ')']);
+title(['Distoreted image (resized to ',num2str(height_im2),'x',num2str(width_im2), ' from ', num2str(height_original_im2), 'x', num2str(width_original_im2), ')']);
 
 subplot(2,3,4);
 imagesc(im2_) ; axis image off; 
