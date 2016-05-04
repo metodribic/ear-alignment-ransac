@@ -20,8 +20,8 @@ disp('Magic is happening ...');
 tic
 % if number of input aruguments are 0, load pictures here
 if nargin == 0
-    original_im1 = imread('databases/awe/028/10.png') ;
-    original_im2 = imread('databases/awe/028/08.png') ;
+    original_im1 = imread('databases/awe/028/02.png') ;
+    original_im2 = imread('databases/awe/028/09.png') ;
   
     % get sizes of pictures
     [width_im1, height_im1, ~] = size(original_im1);
@@ -163,7 +163,10 @@ im1_(isnan(im1_)) = 0 ;
 im2_(isnan(im2_)) = 0 ;
 mosaic = (im1_ + im2_) ./ mass ;
 
-% plot start images and results
+% --------------------------------------------------------------------
+%                                        Plot start images and results
+% --------------------------------------------------------------------
+
 figure(2) ; clf ;
 subplot(2,3,1);
 imagesc(im1_) ; axis image off ; 
@@ -184,18 +187,6 @@ title('Aligned image');
 subplot(2,3,5);
 imagesc(mosaic) ; axis image off ;
 title('Mosaic') ;
-
-% check distorted image size and compre it to the original image
-% [width_im2_, height_im2_, ~] = size(im2_);
-% if width_im1*1.1 < width_im2_
-%     disp('Transformation fails! (width)');
-%     disp([height_im1, height_im2_]);
-% elseif height_im1*1.1 < height_im2_
-%     disp('Transformation fails! (height)');
-%     disp([width_im1, width_im2_]);
-% end
-% disp([width_im2, width_im2_]);
-% disp([height_im2, height_im2_]);
 
 time = toc;
 disp(['Magic happend in ', num2str(time), ' seconds!']);
