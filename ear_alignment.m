@@ -31,8 +31,8 @@ original_im2 = im2;
 
 
 % get sizes of pictures
-[height_im1, width_im1, ~] = size(original_im1);
-[height_original_im2, width_original_im2, ~] = size(original_im2);
+[height_im1, width_im1, ch1] = size(original_im1);
+[height_original_im2, width_original_im2, ch2] = size(original_im2);
 
 % resize
 im1 = imresize(original_im1, [100 100]);
@@ -46,19 +46,24 @@ im1 = im2single(im1) ;
 im2 = im2single(im2) ;
 
 % make grayscale
-im1g = rgb2gray(im1);
-im2g = rgb2gray(im2);
+if ch1 == 3
+    im1 = rgb2gray(im1);
+end
+
+if ch2 == 3
+    im2 = rgb2gray(im2);
+end
 
 % normalize histograms
-im1g = histeq(im1g);
-im2g = histeq(im2g);
+im1 = histeq(im1);
+im2 = histeq(im2);
 
 % --------------------------------------------------------------------
 %                                                         SIFT matches
 % --------------------------------------------------------------------
 
-[f1,d1] = vl_sift(im1g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
-[f2,d2] = vl_sift(im2g, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
+[f1,d1] = vl_sift(im1, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
+[f2,d2] = vl_sift(im2, 'PeakThresh', 0, 'edgethresh', 1000, 'NormThresh', 2, 'Levels', 200, 'Magnif', 5);
 
 [matches, scores] = vl_ubcmatch(d1,d2, 0.9) ;
 
