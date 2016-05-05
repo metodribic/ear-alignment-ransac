@@ -6,5 +6,5 @@ function start()
     createDatabase('r');
     
     time = toc;
-    disp(['Ended in ', num2str(time)q, ' seconds!']);
+    disp(['Ended in ', num2str(time), ' seconds!']);
 end

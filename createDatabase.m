@@ -57,7 +57,7 @@ function createDatabase(side)
             end
             current_data = eval(command);
             
-            % skip this one if side is not right
+            % skip if side is not right
             if ~strcmp(current_data.d,side)
                 continue;
             end
@@ -72,16 +72,19 @@ function createDatabase(side)
             name = strcat(name, '.png');
             image_path = strcat(path,name);
             
-            % skip best_ear
+            % save and skip best_ear
             if strcmp(name, best_ear_data.file)
+                save_path = strcat('results/', prefix);
+                imwrite(best_ear, fullfile(save_path, name))
                 continue;
             end
             
             % read image
             image = imread(image_path);
-             disp(['Aligning ear ', prefix, name]);
+            disp(['Aligning ear ', prefix, name]);
             alligned_image = ear_alignment(best_ear, image);
-            % TODO: Save image
+            
+            % Save image
             save_path = strcat('results/', prefix);
             imwrite(alligned_image, fullfile(save_path, name))
             
