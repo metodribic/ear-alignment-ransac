@@ -1,4 +1,4 @@
-function im2_ = ear_alignment(im1, im2)
+function [im2_, output_data] = ear_alignment(im1, im2)
 % SIFT_MOSAIC Demonstrates matching two images using SIFT and RANSAC
 %
 %   SIFT_MOSAIC demonstrates matching two images based on SIFT
@@ -28,6 +28,8 @@ end
 % if number of input aruguments are 0, load pictures here
 original_im1 = im1;
 original_im2 = im2;
+global a
+a = 0;
 
 
 % get sizes of pictures
@@ -205,5 +207,70 @@ mosaic = (im1_ + im2_) ./ mass ;
 % time = toc;
 % disp(['Magic happend in ', num2str(time), ' seconds!']);
 
+% --------------------------------------------------------------------
+%                                                                  GUI
+% --------------------------------------------------------------------
+figure(1) ; clf ;
+subplot(1,2,1);
+imagesc(original_im2) ; axis image off ; 
+title('Distoreted image');
+
+subplot(1,2,2);
+imagesc(im2_) ; axis image off; 
+title('Aligned image');
+% wait me to decide
+
+
+% Create push button
+btn1 = uicontrol('Style', 'pushbutton', 'String', 'FAIL',...
+    'Position', [400 20 50 20],...
+    'Callback', 'uiresume');
+
+btn2 = uicontrol('Style', 'pushbutton', 'String', 'OK',...
+    'Position', [500 20 50 20],...
+    'Callback', @isOk);
+
+btn3 = uicontrol('Style', 'pushbutton', 'String', 'ORG',...
+    'Position', [120 20 50 20],...
+    'Callback', @isOrg); 
+
+btn4 = uicontrol('Style', 'pushbutton', 'String', 'SKIP',...
+    'Position', [20 20 50 20],...
+    'Callback', @skip); 
+
+uiwait;
+
+
+function isOk(hObject, eventdata, ~)
+    a = 1;
+    uiresume;
+end
+
+function isOrg(hObject, eventdata, ~)
+    a = 2;
+    uiresume;
+end
+
+function skip(hObject, eventdata, ~)
+    a = 3;
+    uiresume;
+end
+
+if a == 2
+    im2_ = im2;
+    output_data = 'ok';
+end
+
+if a == 1
+    output_data = 'ok';
+end
+
+if a == 0 || a == 3
+    output_data = 'fail';
+end
+
 if nargout == 0, clear mosaic ; end
 end
+
+
+

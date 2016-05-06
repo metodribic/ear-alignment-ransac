@@ -2,7 +2,7 @@ function createDatabase(side)
 
     % which side you are aligning (left or right)
 %     side = 'l';
-    
+    global current_data
     if ~exist('results', 'dir')
         mkdir('results');
     end
@@ -42,9 +42,15 @@ function createDatabase(side)
         dir_data = JSON.parse(str);
         
         % get best_ear and its coresponding data
-        best_ear_data = get_best_ear(path, side);
-        best_ear = imread(strcat(path,best_ear_data.file));
+%         best_ear_data = get_best_ear(path, side);
+%         best_ear = imread(strcat(path,best_ear_data.file));
         
+        % average ear test
+        if strcmp(side, 'l') == 1
+            best_ear = imread('perfect_left.png');
+        else
+            best_ear = imread('perfect_right.png');
+        end
         
         % iterate over all images in dir
         for j = 1:10
@@ -73,21 +79,34 @@ function createDatabase(side)
             image_path = strcat(path,name);
             
             % save and skip best_ear
-            if strcmp(name, best_ear_data.file)
-                save_path = strcat('results/', prefix);
-                imwrite(best_ear, fullfile(save_path, name))
-                continue;
-            end
+%             if strcmp(name, best_ear_data.file)
+%                 save_path = strcat('results/', prefix);
+%                 imwrite(best_ear, fullfile(save_path, name))
+%                 continue;
+%             end
             
             % read image
             image = imread(image_path);
-            disp(['Aligning ear ', prefix, name]);
-            alligned_image = ear_alignment(best_ear, image);
+            
+            % check if ear is alreay alligned
+            if ~(current_data.accessories == 0 && current_data.overlap == 0 && current_data.hYaw == 0)
+                disp(['Aligning ear ', prefix, name]);
+                [alligned_image, output_data] = ear_alignment(best_ear, image);
+            else
+                [~,~,ch] = size(image);
+                if ch ~= 1
+                    disp([prefix, name, ' is alredy aligned! Saving...']);
+                    alligned_image = rgb2gray(image);
+                    output_data = 'ok';
+                end
+            end
             
             % Save image
-            save_path = strcat('results/', prefix);
-            imwrite(alligned_image, fullfile(save_path, name))
-            
+            if strcmp(output_data,'ok') == 1
+                save_path = strcat('results/', prefix);
+                imwrite(alligned_image, fullfile(save_path, name))
+            end
+                
         end
     end
 end
