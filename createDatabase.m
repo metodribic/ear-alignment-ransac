@@ -114,4 +114,5 @@ function createDatabase(side)
                 
         end
     end
+    fclose(fileID);
 end
