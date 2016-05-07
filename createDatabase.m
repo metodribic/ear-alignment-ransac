@@ -7,6 +7,10 @@ function createDatabase(side)
         mkdir('results');
     end
     
+    % open file for list of aligned images
+    fileID = fopen('list.txt','w');
+
+    
     % iterate over all directories
     for i=1:100
         
@@ -105,6 +109,7 @@ function createDatabase(side)
             if strcmp(output_data,'ok') == 1
                 save_path = strcat('results/', prefix);
                 imwrite(alligned_image, fullfile(save_path, name))
+                fprintf(fileID, strcat(prefix, name, '\n'));
             end
                 
         end
