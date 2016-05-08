@@ -1,7 +1,7 @@
 function start()
     tic
     % align left ears
-    createDatabase('l');
+    %createDatabase('l');
     % align right ears
     createDatabase('r');
     
