@@ -1,9 +1,9 @@
 function start()
     tic
     % align left ears
-    %createDatabase('l');
+    createDatabase('l');
     % align right ears
-    createDatabase('r');
+    %createDatabase('r');
     
     time = toc;
     disp(['Ended in ', num2str(time), ' seconds!']);

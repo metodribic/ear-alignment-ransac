@@ -1,3 +1,6 @@
+
+% get average ear
+
 function getPerfectEar()
 
     % which side you are aligning (left or right)
@@ -77,7 +80,7 @@ function getPerfectEar()
                         image = rgb2gray(image);
                     end
                     % vsi na 100xNaN
-                    image = imresize(image, [100 100]);
+                    image = imresize(image, [100 NaN]);
                     if counter == 0
                         avg_image = image;
                         counter = counter +1;
@@ -95,6 +98,6 @@ function getPerfectEar()
     figure(1); clf;
     imshow(uint8(test_image));
     disp(counter);
-    imwrite(uint8(test_image), 'perfect_right.png')
+    imwrite(uint8(test_image), 'test_right.png')
     
 end

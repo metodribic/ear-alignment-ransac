@@ -1,3 +1,7 @@
+%%
+% find best ear of one person
+%%
+
 function best_fit = get_best_ear(path, side)
 
 % if nargin == 0

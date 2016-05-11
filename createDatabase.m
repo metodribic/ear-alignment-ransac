@@ -93,14 +93,17 @@ function createDatabase(side)
             image = imread(image_path);
             
             % check if ear is alreay alligned
-            if ~(current_data.accessories == 0 && current_data.overlap == 0 && current_data.hYaw == 0)
+            if current_data.hYaw == 2
+                disp(['Yaw too big, skipping ', prefix, name]);
+                continue;
+            elseif ~(current_data.accessories == 0 && current_data.overlap == 0 && current_data.hYaw == 0)
                 disp(['Aligning ear ', prefix, name]);
                 [alligned_image, output_data] = ear_alignment(best_ear, image);
             else
                 [~,~,ch] = size(image);
                 if ch ~= 1
                     disp([prefix, name, ' is alredy aligned! Saving...']);
-                    alligned_image = rgb2gray(image);
+                    alligned_image = image;
                     output_data = 'ok';
                 end
             end

@@ -29,7 +29,7 @@ original_im2 = im2;
 global a
 a = 0;
 
-figure(1) ; clf ;
+% figure(1) ; clf ;
 
 
 % get sizes of pictures
@@ -37,9 +37,9 @@ figure(1) ; clf ;
 [height_original_im2, width_original_im2, ch2] = size(original_im2);
 
 % resize
-im1 = imresize(original_im1, [100 100]);
-im2 = imresize(original_im2, [100 100]);
-%im2 = imresize(original_im2, [100 NaN]);
+im1 = imresize(original_im1, [100 NaN]);
+%im2 = imresize(original_im2, [100 100]);
+im2 = imresize(original_im2, [100 NaN]);
 
 [height_im2, width_im2, ~] = size(im2);
 
@@ -81,13 +81,15 @@ while a == 0
     % --------------------------------------------------------------------
     %                                         RANSAC with homography model
     % --------------------------------------------------------------------
-
+    
     clear H score ok ;
     for t = 1:100
       % estimate homograpyh
       subset = vl_colsubset(1:numMatches, 4) ;
+      %subset = 1:numMatches;
       A = [] ;
       for i = subset
+         
         A = cat(1, A, kron(X1(:,i)', vl_hat(X2(:,i)))) ;
       end
       [U,S,V] = svd(A) ;
@@ -134,27 +136,27 @@ while a == 0
 %     dh1 = max(size(im2,1)-size(im1,1),0) ;
 %     dh2 = max(size(im1,1)-size(im2,1),0) ;
 %     
-%     figure(2) ; clf ;
+%     figure(3) ; clf ;
 %     subplot(2,1,1) ;
 %     imagesc([padarray(im1,dh1,'post') padarray(im2,dh2,'post')]) ;
-    % o = size(im1,2) ;
-    % line([f1(1,matches(1,:));f2(1,matches(2,:))+o], ...
-    %      [f1(2,matches(1,:));f2(2,matches(2,:))]) ;
-    % title(sprintf('%d tentative matches', numMatches)) ;
-    % axis image off ;
-    % 
-    % subplot(2,1,2) ;
-    % imagesc([padarray(im1,dh1,'post') padarray(im2,dh2,'post')]) ;
-    % o = size(im1,2) ;
-    % line([f1(1,matches(1,ok));f2(1,matches(2,ok))+o], ...
-    %      [f1(2,matches(1,ok));f2(2,matches(2,ok))]) ;
-    % title(sprintf('%d (%.2f%%) inliner matches out of %d', ...
-    %               sum(ok), ...
-    %               100*sum(ok)/numMatches, ...
-    %               numMatches)) ;
-    % axis image off ;
-    % 
-    % drawnow ;
+%     o = size(im1,2) ;
+%     line([f1(1,matches(1,:));f2(1,matches(2,:))+o], ...
+%          [f1(2,matches(1,:));f2(2,matches(2,:))]) ;
+%     title(sprintf('%d tentative matches', numMatches)) ;
+%     axis image off ;
+%     
+%     subplot(2,1,2) ;
+%     imagesc([padarray(im1,dh1,'post') padarray(im2,dh2,'post')]) ;
+%     o = size(im1,2) ;
+%     line([f1(1,matches(1,ok));f2(1,matches(2,ok))+o], ...
+%          [f1(2,matches(1,ok));f2(2,matches(2,ok))]) ;
+%     title(sprintf('%d (%.2f%%) inliner matches out of %d', ...
+%                   sum(ok), ...
+%                   100*sum(ok)/numMatches, ...
+%                   numMatches)) ;
+%     axis image off ;
+%     
+%     drawnow ;
 
     % --------------------------------------------------------------------
     %                                                               Mosaic
@@ -188,23 +190,23 @@ while a == 0
     %                                        Plot start images and results
     % --------------------------------------------------------------------
 
-    % figure(2) ; clf ;
-    % subplot(2,3,1);
-    % imagesc(im1_) ; axis image off ; 
-    % title(['Original image (resized to 100x100 from ', num2str(width_im1), 'x', num2str(height_im1), ')']);
-    % 
-    % subplot(2,3,2);
-    % imagesc(original_im2) ; axis image off ; 
-    % title('Distoreted image');
-    % 
-    % subplot(2,3,3);
-    % imagesc(im2) ; axis image off ; 
-    % title(['Distoreted image (resized to ',num2str(height_im2),'x',num2str(width_im2), ...
-    %        ' from ', num2str(height_original_im2), 'x', num2str(width_original_im2), ')']);
-    % 
-    % subplot(2,3,4);
-    % imagesc(im2_) ; axis image off; 
-    % title('Aligned image');
+%     figure(2) ; clf ;
+%     subplot(2,3,1);
+%     imagesc(im1_) ; axis image off ; 
+%     title(['Original image (resized to 100x100 from ', num2str(width_im1), 'x', num2str(height_im1), ')']);
+%     
+%     subplot(2,3,2);
+%     imagesc(original_im2) ; axis image off ; 
+%     title('Distoreted image');
+%     
+%     subplot(2,3,3);
+%     imagesc(im2) ; axis image off ; 
+%     title(['Distoreted image (resized to ',num2str(height_im2),'x',num2str(width_im2), ...
+%            ' from ', num2str(height_original_im2), 'x', num2str(width_original_im2), ')']);
+%     
+%     subplot(2,3,4);
+%     imagesc(im2_) ; axis image off; 
+%     title('Aligned image');
     % 
     % subplot(2,3,5);
     % imagesc(mosaic) ; axis image off ;
@@ -217,6 +219,7 @@ while a == 0
     %                                                                  GUI
     % --------------------------------------------------------------------
     disp('Is this ok?');
+    figure(3); clf;
     subplot(1,2,1);
     imagesc(original_im2) ; axis image off ; 
     title('Distoreted image');
