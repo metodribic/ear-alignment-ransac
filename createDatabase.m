@@ -3,6 +3,7 @@ function createDatabase(side)
     % which side you are aligning (left or right)
 %     side = 'l';
     global current_data
+
     if ~exist('results', 'dir')
         mkdir('results');
     end
@@ -78,8 +79,10 @@ function createDatabase(side)
             else
                 name = int2str(j);
             end
-
+            
+            name_index = name;
             name = strcat(name, '.png');
+            
             image_path = strcat(path,name);
             
             % save and skip best_ear
@@ -98,11 +101,12 @@ function createDatabase(side)
                 continue;
             elseif ~(current_data.accessories == 0 && current_data.overlap == 0 && current_data.hYaw == 0)
                 disp(['Aligning ear ', prefix, name]);
-                [alligned_image, output_data] = ear_alignment(best_ear, image);
+                [alligned_image, output_data, H] = ear_alignment(best_ear, image);
             else
                 [~,~,ch] = size(image);
                 if ch ~= 1
                     disp([prefix, name, ' is alredy aligned! Saving...']);
+                    H = eye(3);
                     alligned_image = image;
                     output_data = 'ok';
                 end
@@ -113,6 +117,20 @@ function createDatabase(side)
                 save_path = strcat('results/', prefix);
                 imwrite(alligned_image, fullfile(save_path, name))
                 fprintf(fileID, strcat(prefix, name, '\n'));
+                save(strcat(save_path,name_index,'_H.mat'), 'H');
+                
+                %izra?unaj tragus
+                tragus_x = current_data.x;
+                tragus_y = current_data.y;
+
+                tragus = [tragus_x; tragus_y; 1]';
+                newTragus = tragus*H;
+                %newTragus = newTragus./newTragus(3);
+                
+                figure
+                imshow(alligned_image); hold on;
+                plot(newTragus(1), newTragus(2),'r.','MarkerSize',20)
+                
             end
                 
         end

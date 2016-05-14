@@ -1,4 +1,4 @@
-function [im2_, output_data] = ear_alignment(im1, im2)
+function [im2_, output_data, H] = ear_alignment(im1, im2)
 % SIFT_MOSAIC Demonstrates matching two images using SIFT and RANSAC
 %
 %   SIFT_MOSAIC demonstrates matching two images based on SIFT
@@ -27,6 +27,7 @@ end
 original_im1 = im1;
 original_im2 = im2;
 global a
+
 a = 0;
 
 % figure(1) ; clf ;
