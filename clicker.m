@@ -2,6 +2,7 @@ function clicker( path )
     % path = path of transformed images
     % source_path = path of original database
     % dest_path = path of target folder where the images will be copied
+    % saves tragus on transformed image
 
     FILE_ENDINGS = {'png', 'jpg', 'bmp'};
     len = 0;

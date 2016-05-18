@@ -98,6 +98,6 @@ function getPerfectEar()
     figure(1); clf;
     imshow(uint8(test_image));
     disp(counter);
-    imwrite(uint8(test_image), 'test_right.png')
+    imwrite(uint8(test_image), 'avg_right_color.png')
     
 end

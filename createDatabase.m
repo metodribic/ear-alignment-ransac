@@ -10,7 +10,7 @@ function createDatabase(side)
     
     % open file for list of aligned images
     fileID = fopen('list.txt','w');
-
+    index = 0;
     
     % iterate over all directories
     for i=1:100
@@ -85,31 +85,16 @@ function createDatabase(side)
             
             image_path = strcat(path,name);
             
-            % save and skip best_ear
-%             if strcmp(name, best_ear_data.file)
-%                 save_path = strcat('results/', prefix);
-%                 imwrite(best_ear, fullfile(save_path, name))
-%                 continue;
-%             end
-            
             % read image
             image = imread(image_path);
             
-            % check if ear is alreay alligned
-            if current_data.hYaw == 2
-                disp(['Yaw too big, skipping ', prefix, name]);
-                continue;
-            elseif ~(current_data.accessories == 0 && current_data.overlap == 0 && current_data.hYaw == 0)
-                disp(['Aligning ear ', prefix, name]);
-                [alligned_image, output_data, H] = ear_alignment(best_ear, image);
+            % Only 
+            if current_data.hRoll == 0 && current_data.hYaw == 0
+                index = index +1;
+                disp([int2str(index), '. Aligning ear ', prefix, name]);
+                [alligned_image, output_data, H] = earAlignment(best_ear, image, side);
             else
-                [~,~,ch] = size(image);
-                if ch ~= 1
-                    disp([prefix, name, ' is alredy aligned! Saving...']);
-                    H = eye(3);
-                    alligned_image = image;
-                    output_data = 'ok';
-                end
+                output_data = 'fail';
             end
             
             % Save image
@@ -117,19 +102,22 @@ function createDatabase(side)
                 save_path = strcat('results/', prefix);
                 imwrite(alligned_image, fullfile(save_path, name))
                 fprintf(fileID, strcat(prefix, name, '\n'));
+                % save homography
                 save(strcat(save_path,name_index,'_H.mat'), 'H');
+                % save aligned image matrix
+                save(strcat(save_path,name_index,'.mat'), 'alligned_image');
                 
-                %izra?unaj tragus
-                tragus_x = current_data.x;
-                tragus_y = current_data.y;
-
-                tragus = [tragus_x; tragus_y; 1]';
-                newTragus = tragus*H;
-                %newTragus = newTragus./newTragus(3);
-                
-                figure
-                imshow(alligned_image); hold on;
-                plot(newTragus(1), newTragus(2),'r.','MarkerSize',20)
+%                 %izra?unaj tragus
+%                 tragus_x = current_data.x;
+%                 tragus_y = current_data.y;
+% 
+%                 tragus = [tragus_x; tragus_y; 1]';
+%                 newTragus = tragus*H;
+%                 %newTragus = newTragus./newTragus(3);
+%                 
+%                 figure
+%                 imshow(alligned_image); hold on;
+%                 plot(newTragus(1), newTragus(2),'r.','MarkerSize',20)
                 
             end
                 
