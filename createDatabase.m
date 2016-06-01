@@ -52,9 +52,9 @@ function createDatabase(side)
         
         % average ear test
         if strcmp(side, 'l') == 1
-            best_ear = imread('perfect_left.png');
+            best_ear = imread('Average_ear/perfect_left.png');
         else
-            best_ear = imread('perfect_right.png');
+            best_ear = imread('Average_ear/perfect_right.png');
         end
         
         % iterate over all images in dir
@@ -89,10 +89,10 @@ function createDatabase(side)
             image = imread(image_path);
             
             % Only 
-            if current_data.hRoll == 0 && current_data.hYaw == 0
+            if current_data.hRoll < 2 && current_data.hYaw == 0
                 index = index +1;
                 disp([int2str(index), '. Aligning ear ', prefix, name]);
-                [alligned_image, output_data, H] = earAlignment(best_ear, image, side);
+                [alligned_image, output_data, H] = earAlignment(best_ear, image, current_data, side);
             else
                 output_data = 'fail';
             end

@@ -1,4 +1,4 @@
-function [im2_, output_data, H] = earAlignment(im1, im2, side)
+function [im2_, output_data, H] = earAlignment(im1, im2, current_data, side)
 % SIFT_MOSAIC Demonstrates matching two images using SIFT and RANSAC
 %
 %   SIFT_MOSAIC demonstrates matching two images based on SIFT
@@ -70,9 +70,9 @@ im2g = histeq(im2g);
 % --------------------------------------------------------------------
 
 if strcmp(side, 'l') == 1
-    feature = load('perfect_left_features.mat');
+    feature = load('Average_ear/perfect_left_features.mat');
 elseif strcmp(side, 'r') == 1
-    feature = load('perfect_right_features.mat');
+    feature = load('Average_ear/perfect_right_features.mat');
 end
 
 f1 = feature.tmp.f;
@@ -90,16 +90,26 @@ X1 = f1(1:2,matches(1,:)) ; X1(3,:) = 1 ;
 X2 = f2(1:2,matches(2,:)) ; X2(3,:) = 1 ;
 
 
-while a == 0
+% while a == 0
 
 
     % --------------------------------------------------------------------
     %                                         RANSAC with homography model
     % --------------------------------------------------------------------
-    
+while a < 3
     clear H score ok ;
-    % T = 100
-    for t = 1:1000
+    
+    switch a
+       case 0
+          to = 5000;
+       case 1
+          to = 10000;
+       case 2
+          to = 25000;
+    end
+    
+    disp(['Threshold: ',num2str(to)]);
+    for t = 1:to
       % estimate homograpyh - take random 4 points
       subset = vl_colsubset(1:numMatches, 4) ;
       
@@ -117,7 +127,7 @@ while a == 0
       ok{t} = (du.*du + dv.*dv) < 6*6 ;
       score(t) = sum(ok{t}) ;
     end
-
+    
     [score, best] = max(score) ;
     H = H{best} ;
     ok = ok{best} ;
@@ -126,6 +136,7 @@ while a == 0
     %                                                  Optional refinement 
     % --------------------------------------------------------------------
 
+    % MOVED TO BOTTOM BECAUSE OF GUI
     % function err = residual(H)
     %  u = H(1) * X1(1,ok) + H(4) * X1(2,ok) + H(7) ;
     %  v = H(2) * X1(1,ok) + H(5) * X1(2,ok) + H(8) ;
@@ -176,9 +187,7 @@ while a == 0
     % --------------------------------------------------------------------
     %                                                               Mosaic
     % --------------------------------------------------------------------
-% 
-    tmp = 100*sum(ok)/numMatches;
-    disp(int2str(tmp));
+
     box2 = [1  size(im2,2) size(im2,2)  1 ;
             1  1           size(im2,1)  size(im2,1) ;
             1  1           1            1 ] ;
@@ -190,11 +199,12 @@ while a == 0
 
     [u,v] = meshgrid(ur,vr) ;
     im1_ = vl_imwbackward(im2double(im1),u,v) ;
-
+    [h1,w1,~] = size(im2);
+%     im2(round(h1/2), round(w1/2),:) = [0; 255; 0];
     z_ = H(3,1) * u + H(3,2) * v + H(3,3) ;
     u_ = (H(1,1) * u + H(1,2) * v + H(1,3)) ./ z_ ;
     v_ = (H(2,1) * u + H(2,2) * v + H(2,3)) ./ z_ ;
-    im2_ = vl_imwbackward(im2double(im2),u_,v_) ;
+    [im2_] = vl_imwbackward(im2double(im2),u_,v_) ;
 
     %TODO: CE RABIS MOSAIC JE TUKI NEKI NAROBE, NO IDEA WHAT, RETURN TO
     % VERJETNO NEKI Z IM1G IN IM2F...
@@ -202,6 +212,19 @@ while a == 0
     im1_(isnan(im1_)) = 0 ;
     im2_(isnan(im2_)) = 0 ;
     %mosaic = (im1_ + im2_) ./ mass ;
+    
+%     [pos1, pos2] = find(im2_(:,:,1)<50 & im2_(:,:,2)>100 & im2_(:,:,3)<50);
+    
+    % calculate new Center
+%     figure(2);
+%     subplot(1,2,1); imshow(im2); hold on
+%     plot(w1/2, h1/2,'g.','MarkerSize',30)
+% %     center = [h1/2; w1/2; 1];
+% %     center = inv(H) * center;
+% %     center = center/center(3);
+%     subplot(1,2,2); imshow(im2_); hold on
+%     plot(pos2, pos1,'r.','MarkerSize',30)
+%     
 
     % --------------------------------------------------------------------
     %                                        Plot start images and results
@@ -224,90 +247,126 @@ while a == 0
 %     subplot(2,3,4);
 %     imagesc(im2_) ; axis image off; 
 %     title('Aligned image');
-    % 
-    % subplot(2,3,5);
-    % imagesc(mosaic) ; axis image off ;
-    % title('Mosaic') ;
-    % 
-    % time = toc;
-    % disp(['Magic happend in ', num2str(time), ' seconds!']);
+%     
+%      subplot(2,3,5);
+%      imagesc(mosaic) ; axis image off ;
+%      title('Mosaic') ;
+%      
+%      time = toc;
+%      disp(['Magic happend in ', num2str(time), ' seconds!']);
 
     % --------------------------------------------------------------------
     %                                                                  GUI
     % --------------------------------------------------------------------
-    disp('Is this ok?');
     figure(3); clf;
     subplot(1,2,1);
     imagesc(original_im2) ; axis image off ; 
     title('Distoreted image');
 
     sub1 = subplot(1,2,2);
-    imagesc(im2_) ; axis image off; 
+    imagesc(im2_) ; axis image off; hold on 
     title('Aligned image');
-
-    % BUTTONS
-    btn1 = uicontrol('Style', 'pushbutton', 'String', 'FAIL',...
-        'Position', [400 20 50 20],...
-        'Callback', @isFailed);
-
-    btn2 = uicontrol('Style', 'pushbutton', 'String', 'OK',...
-        'Position', [500 20 50 20],...
-        'Callback', @isOk);
-
-    btn3 = uicontrol('Style', 'pushbutton', 'String', 'ORG',...
-        'Position', [120 20 50 20],...
-        'Callback', @isOrg); 
-
-    btn4 = uicontrol('Style', 'pushbutton', 'String', 'SKIP',...
-        'Position', [20 20 50 20],...
-        'Callback', @skip); 
-
-    % wait me to decide
-    uiwait;
+    
+    % compute new tragus
+%     [him2, wim2, ~] = size(im2);
+%     [horg2, worg2, ~] = size(original_im2);
+%     
+%     oldTragus = struct();
+%     oldTragus.x = current_data.x;
+%     oldTragus.y = current_data.y;
+%     
+%     newTragus.x = (oldTragus.x * him2)/ horg2;
+%     newTragus.y = (oldTragus.y * wim2)/ worg2;
+%     newTragus = [newTragus.x; newTragus.y; 1];
+%     
+%     newTragus = H*newTragus;
+%     newTragus = newTragus/newTragus(3);
+%     plot(newTragus(1), newTragus(2),'r.','MarkerSize',30)
+    
+    
+    % check if transformation was ok
+    % it is ok if score is above 45%
+    % it is also ok if score is abobe 40% after 25000 iterations in RANSAC
+    percent = 100*sum(ok)/numMatches;
+    if percent < 45
+        a = a + 1;
+        if a == 3
+            output_data = 'fail';
+            break;
+        end
+    else
+        output_data = 'ok';
+        break; 
+    end
+    
+    
+    
+    
+end
+% 
+%     % BUTTONS
+%     btn1 = uicontrol('Style', 'pushbutton', 'String', 'FAIL',...
+%         'Position', [400 20 50 20],...
+%         'Callback', @isFailed);
+% 
+%     btn2 = uicontrol('Style', 'pushbutton', 'String', 'OK',...
+%         'Position', [500 20 50 20],...
+%         'Callback', @isOk);
+% 
+%     btn3 = uicontrol('Style', 'pushbutton', 'String', 'ORG',...
+%         'Position', [120 20 50 20],...
+%         'Callback', @isOrg); 
+% 
+%     btn4 = uicontrol('Style', 'pushbutton', 'String', 'SKIP',...
+%         'Position', [20 20 50 20],...
+%         'Callback', @skip); 
+% 
+%     % wait me to decide
+%     uiwait;
     %clear subplot
-    clf('reset');
-end % end while
+%     clf('reset');
+% end % end while
 
-% set a = 1 if OK button is pressed
-function isFailed(hObject, eventdata, ~)
-    disp('Aligning again...');
-    uiresume;
-end
-
-% set a = 1 if OK button is pressed
-function isOk(hObject, eventdata, ~)
-    a = 1;
-    uiresume;
-    disp('Saving aligned image');
-end
-
-% set a = 2 if ORG button is pressed
-function isOrg(hObject, eventdata, ~)
-    a = 2;
-    uiresume;
-    disp('Saving original image')
-end
-
-% set a = 1 if SKIP button is pressed
-function skip(hObject, eventdata, ~)
-    a = 3;
-    uiresume;
-    disp('Skiping this image.');
-end
-
-% return data and image, depending on value of a
-if a == 2
-    im2_ = im2;
-    output_data = 'ok';
-end
-
-if a == 1
-    output_data = 'ok';
-end
-
-if a == 0 || a == 3
-    output_data = 'fail';
-end
+% % set a = 1 if OK button is pressed
+% function isFailed(hObject, eventdata, ~)
+%     disp('Aligning again...');
+%     uiresume;
+% end
+% 
+% % set a = 1 if OK button is pressed
+% function isOk(hObject, eventdata, ~)
+%     a = 1;
+%     uiresume;
+%     disp('Saving aligned image');
+% end
+% 
+% % set a = 2 if ORG button is pressed
+% function isOrg(hObject, eventdata, ~)
+%     a = 2;
+%     uiresume;
+%     disp('Saving original image')
+% end
+% 
+% % set a = 1 if SKIP button is pressed
+% function skip(hObject, eventdata, ~)
+%     a = 3;
+%     uiresume;
+%     disp('Skiping this image.');
+% end
+% 
+% % return data and image, depending on value of a
+% if a == 2
+%     im2_ = im2;
+%     output_data = 'ok';
+% end
+% 
+% if a == 1
+%     output_data = 'ok';
+% end
+% 
+% if a == 0 || a == 3
+%     output_data = 'fail';
+% end
 
 % function for correcting H matrix
 function err = residual(H)
