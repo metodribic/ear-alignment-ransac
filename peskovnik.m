@@ -2,13 +2,16 @@ function peskovnik()
 
 
     index = 0;
+    full = 0;
     side = 'l';
+%     Is = zeros(100,100,520);
 
     % iterate over all directories
     for i=1:100
         
         % create path for reading dir        
         path = 'databases/awe/';
+        result_dir = 'results/';
         prefix = '';
         
         % make prefix for reading database (001, 002, ...)
@@ -23,6 +26,7 @@ function peskovnik()
         % get full path of direcotry
         prefix = strcat(prefix, '/');
         path = strcat(path, prefix);
+        mkdir([result_dir, prefix]);
         
 
         % get dir data
@@ -46,7 +50,7 @@ function peskovnik()
             
             name_index = name;
             name = strcat(name, '.png');
-            
+            result_path = [result_dir,prefix, name];
             image_path = strcat(path,name);
             
             %check the side
@@ -62,15 +66,26 @@ function peskovnik()
                 continue;
             end
             
-            if current_data.hRoll < 2 && current_data.hRoll > - 2&& current_data.hYaw < 2
-                index = index +1;
-                disp(image_path);
-            end 
-
+          if current_data.hRoll < 2 && current_data.hRoll > - 2&& current_data.hYaw < 2
+            index = index +1;
+            full = 1;
+            disp(image_path);
+            I = imread(image_path);
+%             figure(1); imshow(I);
+            I = imresize(I, [100 100]);
+            if size(I, 3) > 1
+                I = rgb2gray(I);
+            end
+            imwrite(I, result_path);
+%             Is(:,:,i+j) = I;
+          end
+            
+        end
+        if(full == 0)
+            rmdir([result_dir, prefix]);
         end
     end
-    index
-
+    disp(index);
 
 
 

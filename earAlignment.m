@@ -198,13 +198,13 @@ while a < 3
     vr = min([1 box2_(2,:)]):max([size(im1,1) box2_(2,:)]) ;
 
     [u,v] = meshgrid(ur,vr) ;
-    im1_ = vl_imwbackward(im2double(im1),u,v) ;
+    [im1_, jx, jy] = vl_imwbackward(im2double(im1),u,v) ;
     [h1,w1,~] = size(im2);
 %     im2(round(h1/2), round(w1/2),:) = [0; 255; 0];
     z_ = H(3,1) * u + H(3,2) * v + H(3,3) ;
     u_ = (H(1,1) * u + H(1,2) * v + H(1,3)) ./ z_ ;
     v_ = (H(2,1) * u + H(2,2) * v + H(2,3)) ./ z_ ;
-    [im2_] = vl_imwbackward(im2double(im2),u_,v_) ;
+    [im2_, jx2, jy2] = vl_imwbackward(im2double(im2),u_,v_) ;
 
     %TODO: CE RABIS MOSAIC JE TUKI NEKI NAROBE, NO IDEA WHAT, RETURN TO
     % VERJETNO NEKI Z IM1G IN IM2F...
