@@ -1,5 +1,5 @@
 #Ear alignment using RANSAC
-### Description
+## Description
 This is case study for bachelor degree on Faculty of Computer and Information Science
 
 The goal of this research/case study was to prove that RANSAC as a state of art method could align images which represents different object (different shape, same class - outer ear). For feature extraction was used algorithm [SIFT](http://www.vlfeat.org/overview/sift.html). As a reference ear (ear to which all ears was aligned) we summarize all perfectly aligned ears in [AWE dataset](http://awe.fri.uni-lj.si/) (every ear in AWE dataset is annotated - therefore we knew which ear is perfectly aligned). 
@@ -9,13 +9,13 @@ This image shows reference/average ear, cropped image to remove black areas on s
 
 We rejected images which could not be aligned (RANSAC failed to connect more than 40% of all extracted points). Evaluation was made with [AWE toolbox](http://awe.fri.uni-lj.si/). Partial results was published [here](https://www.researchgate.net/publication/308618674_Influence_of_Alignment_on_Ear_Recognition_Case_Study_on_AWE_Dataset), for full results head to [bachelor thesis](http://eprints.fri.uni-lj.si/3674/1/63110173-METOD_RIBI%C4%8C-Vpliv_poravnave_na_uspe%C5%A1nost_razpoznavanja_uhljev-1.pdf) (Slovene)
 
-### Requirements
+## Requirements
 - Matlab (tested on R2015b)
 - Matlab Image Processing Toolbox
 - [vlfeat](http://www.vlfeat.org/) (tested on 0.9.20)
 
 
-### How to run
+## How to run
 RANSAC:
 - start the process of alignment with RANSAC/STARTHERE.m
 - it then calls createDatabase.m with side input:
@@ -27,7 +27,7 @@ side == 'l' || 'r'
 
 NOTE: All ears were aligned using perfect ear which was result of summarizing all pixels of perfectly aligned images from AWE dataset. Image and matrix of average ear is in [Average_ear](https://github.com/metodribic/ear-alignment-ransac/tree/master/Average_ear) dir, but you should use your own reference image.
 
-### References
+## References
 
 1. K. Chang, K. W. Bowyer, S. Sarkar, and B. Vic-tor, “Comparison and combination of ear and face images in appearance-based biometrics,” Pattern Analysis and Machine Intelligence, IEEE Transactions on, vol. 25, no. 9, pp. 1160–1165, 2003.
 
