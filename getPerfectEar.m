@@ -1,5 +1,6 @@
 
-% get average ear
+% get average ear (This is not the final script)
+% TODO
 
 function getPerfectEar()
 
