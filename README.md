@@ -1,4 +1,4 @@
-#Ear alignment using RANSAC
+# NOTE: This research is strongly based on [AWE dataset](http://awe.fri.uni-lj.si/)
 ## Description
 This is case study for bachelor degree on Faculty of Computer and Information Science
 
